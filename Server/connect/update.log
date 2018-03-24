@@ -1,0 +1,24 @@
+1.1
+#
+I have forget the bug I had repaired;
+probably is ??Concurrent??
+
+1.2
+#
+The problem is that I have some misunderstand of the tcp;
+you should receive many times to receive all datas from the sender;
+not once.
+
+#
+Maybe this time I have repaired the bug of a file_open_too_much problem;
+but I don't confirm it. 
+
+
+
+
+
+
+
+
+Good luck.
+Use happy.
