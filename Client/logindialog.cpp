@@ -125,7 +125,7 @@ void LoginDialog::on_loginBtn_clicked()
     for(int i=33,j=0;j<pwd.size();i++,j++)
         sendUser[i] = pwd[j];
     //发送数据64比特的sendUser，返回结果放在res里面
-    int zz_Res = client(IP,Port,sendUser,65,res,1501,0);
+    int zz_Res = client(IP,Port,sendUser,65,res,1501);
     //如果有回馈结果，第一位表示题目数量
     if(zz_Res==1)
     {

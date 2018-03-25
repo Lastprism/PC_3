@@ -23,46 +23,18 @@ vector<string>waiting_run_id;
 #pragma comment(lib, "ws2_32.lib")
 
 //输出文件调试
-void outfilechar(char* str)
+template<class T>
+void output(const T msg)
 {
-    ofstream out;
-    out.open("E:\\out.txt",ios::app);
-    if(out.is_open())
+    ofstream fout;
+    fout.open("e:\\out.txt",ios::app);
+    if(fout.is_open())
     {
-        out << str <<endl;
-        out.close();
+        fout << msg << endl;
+        fout.close();
     }
 }
-void outfileint(int str)
-{
-    ofstream out;
-    out.open("E:\\out.txt",ios::app);
-    if(out.is_open())
-    {
-        out << str <<endl;
-        out.close();
-    }
-}
-void outfilestring(string str)
-{
-    ofstream out;
-    out.open("E:\\out.txt",ios::app);
-    if(out.is_open())
-    {
-        out << str <<endl;
-        out.close();
-    }
-}
-void outfilelong(long long str)
-{
-    ofstream out;
-    out.open("E:\\out.txt",ios::app);
-    if(out.is_open())
-    {
-        out << str <<endl;
-        out.close();
-    }
-}
+//向文件输出提交历史记录
 void outFileSub_His(const char* filename,string run_id)
 {
     ofstream out;
@@ -76,28 +48,25 @@ void outFileSub_His(const char* filename,string run_id)
         out.close();
     }
 }
-
+//从文件中读入提交历史记录
 void inputFileSub_His(const char* filename)
 {
     ifstream input;
     input.open(filename,ios::app);
     if(input.is_open())
     {
-
         while(!input.eof())
         {
             vector<string> v;
             int int_cnt = all_res_map.size();
             char buff[20];
-            memset(buff,0,sizeof(buff));
-            input.getline(buff,20);
-            v.push_back(buff);
-            memset(buff,0,sizeof(buff));
-            input.getline(buff,20);
-            v.push_back(buff);
-            memset(buff,0,sizeof(buff));
-            input.getline(buff,20);
-            v.push_back(buff);
+            int _cnt = 3;
+            while(_cnt--)
+            {
+                memset(buff,0,sizeof(buff));
+                input.getline(buff,20);
+                v.push_back(buff);
+            }
             if(v[0] != "")
             {
                 all_res_data.push_back(v);
@@ -130,18 +99,16 @@ long long int RSHash(string str)
       }
       return hash;
 }
-
-int client(const char* add,int port,char data_of_send[],int size_of_datas,char* result,int result_size,int sendCount)
+//add表示ip地址，port表示端口，data_of_send表示要发送的数据，size_of_datas表示发送数据的大小，result表示接受返回结果的缓冲区，result表示缓冲区大小
+int client(const char* add,int port,char data_of_send[],int size_of_datas,char* result,int result_size)
 {
-    if(sendCount > 20)
-        return 0;
     //初始化
     WORD sockVersion = MAKEWORD(2, 2);
     WSADATA data;
     if(WSAStartup(sockVersion, &data)!=0)
         return -1;
 
-    //新建
+    //新建套接字
     SOCKET sclient = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if(sclient == INVALID_SOCKET)
         return -1 ;
@@ -164,7 +131,6 @@ int client(const char* add,int port,char data_of_send[],int size_of_datas,char* 
     DES des_encrypt;
     s_data_of_encrypt =des_encrypt.Encrypt(s_data_of_encrypt,"123456");
     size_of_datas = s_data_of_encrypt.size();
-    s_data_of_encrypt = s_data_of_encrypt ;
 
     //添加数据包大小
     char tmp1[10] ;              memset(tmp1,0,sizeof(tmp1));
@@ -177,30 +143,28 @@ int client(const char* add,int port,char data_of_send[],int size_of_datas,char* 
     size_of_datas += 10;
 
     //发送数据
-    if(send(sclient, s_data_of_encrypt.c_str(), size_of_datas, 0)==-1)
-        return -1;
+    int send_ans = 1;
+    if(send(sclient, s_data_of_encrypt.c_str(), size_of_datas, 0) == -1)
+        send_ans = -1;
+    else
+    {
+        memset(result,0,sizeof(result));
+        int ret = recv(sclient, result, result_size, 0);
+        cout<<result<<endl;
+        if(ret>0){
+            result[ret] = 0x00;
+            if(strcmp(result,"again")==0)
+                send_ans = 0;
+        }
+    }
 
     //send()用来将数据由指定的socket传给对方主机
     //int send(int s, const void * msg, int len, unsigned int flags)
     //s为已建立好连接的socket，msg指向数据内容，len则为数据长度，参数flags一般设0
     //成功则返回实际传送出去的字符数，失败返回-1，错误原因存于error
 
-    //接收结果
-    memset(result,0,sizeof(result));
-    int ret = recv(sclient, result, result_size, 0);
-
-    if(ret>0){
-        result[ret] = 0x00;
-        if(strcmp(result,"again")==0){
-                int zz_Res = client(add,port, data_of_send,size_of_datas,result,result_size,sendCount+1);
-                if(zz_Res==0)
-                    return 0;
-                else if(zz_Res == -1)
-                    return -1;
-        }
-    }
     closesocket(sclient);
     WSACleanup();
-    return 1;
+    return send_ans;
 }
 

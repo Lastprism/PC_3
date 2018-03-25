@@ -52,7 +52,7 @@ void Thread::query_res()
 
     for(int i=65,j=0;i<=74&&j<run_id.size();i++,j++)
         send_query[i] = run_id[j];
-    int zz_Res = client(IP,Port,send_query,75,res_of_query,50,0);
+    int zz_Res = client(IP,Port,send_query,75,res_of_query,50);
     if(zz_Res == -1|| zz_Res == 0)
     {
         m_pTimer->stop();

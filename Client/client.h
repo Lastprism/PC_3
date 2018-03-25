@@ -33,15 +33,13 @@ extern int Port;
 extern vector<string>waiting_run_id;
 
 //发送数据，add是服务器地址，port是端口，data_of_send是待发送数据，size_of_data是数据大小,res是返回结果
-extern int client(const char* add,int port,char data_of_send[],int size_of_data,char* result,int result_size,int sendCount);
+extern int client(const char* add,int port,char data_of_send[],int size_of_data,char* result,int result_size);
 
 //输出调试信息
 extern void outFileSub_His(const char*filename,string run_id);
 extern void inputFileSub_His(const char*filename);
-extern void outfilechar(char* str);
-extern void outfileint(int str);
-extern void outfilestring(string str);
-extern void outfilelong(long long  str);
+template<class T>
+extern void output(const T msg);
 //获取当前时间
 extern string getTime();
 

@@ -91,7 +91,7 @@ void MainWindow::on_submitBtn_clicked()
     if(cdlg.exec() == QDialog::Accepted)
     {
         char res_of_run_id[20];
-        int zz_Res = client(IP,Port,code,sCodeSize,res_of_run_id,20,0);
+        int zz_Res = client(IP,Port,code,sCodeSize,res_of_run_id,20);
         if(zz_Res==0)
         {
             ErrorDialog edlg;
